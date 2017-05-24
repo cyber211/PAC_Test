@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/PAC.png</file>
+        <file>Help.txt</file>
+    </qresource>
+</RCC>

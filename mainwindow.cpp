@@ -23,6 +23,8 @@
 
 #include "typedefs.h"
 
+
+#define APP_VERSION "V2.6"
 //*********** 7252 CMD **********************************************************
 #define CMD_7252i_MeasureMode "OUTP:PRES:MODE MEASURE\n"
 #define CMD_7252i_ReadReadyStatus "stat:oper:cond\n"
@@ -40,6 +42,7 @@
 #define CMD_7252i_GetValue_ChannelB "MEAS:PRES11?\n"// Channel B
 
 //*********** UUT CMD **********************************************************
+#define CMD_UUT_EnterRoot "wizard -c enter -a elbereth\n"
 #define CMD_UUT_EnterShell "sh -c set -t p\n"
 #define CMD_UUT_EnterMeasuereMode "state -c set -n meas\n"
 
@@ -116,13 +119,27 @@ MainWindow::MainWindow(QWidget *parent):
     ui->comboBox_FIX_ISO->blockSignals(false);
     ui->comboBox_7252->blockSignals(false);
 
+    ui->checkBox_EnableDisableISO->setChecked(true);
+    ui->checkBox_MasterSwitch->setEnabled(false);
+    ui->checkBox_SubSwitch_1->setEnabled(false);
+    ui->checkBox_SubSwitch_2->setEnabled(false);
+    ui->checkBox_SubSwitch_3->setEnabled(false);
+    ui->checkBox_SubSwitch_4->setEnabled(false);
+    ui->checkBox_SubSwitch_5->setEnabled(false);
+    ui->checkBox_SubSwitch_6->setEnabled(false);
+    ui->checkBox_SubSwitch_7->setEnabled(false);
+    ui->checkBox_SubSwitch_8->setEnabled(false);
+    ui->pushButton_Iso_Setting->setEnabled(false);
+
+
+    xlsxFileName = "PAC.xlsx";  //Default filename, will be refreshed by new name for each timer test with timestamp.
     CurrentRow = StartRow_Pres;
+
     Total_UUT_Number = 0;
 
     InitialCOM_Time();
 
-     //ui->statusBar->addPermanentWidget(ui->label_4);
-     ui->statusBar->addWidget(ui->label_CurrentTime);
+    ui->statusBar->addWidget(ui->label_CurrentTime);
 
     // 新建设备和UUT的串口并初始化串口设置
     PortSettings settings_Eqquipments = {BAUD9600, DATA_8, PAR_NONE, STOP_1, FLOW_OFF, 10};
@@ -181,10 +198,12 @@ void MainWindow::AboutThis()
 
     QString AboutString;
 
-    AboutString = "This is a AutoTest program for PAC project\r\n\
-            Release Version: V2.1\r\n\r\n\
-            Designed by Bob Cao       Email:yongbo.cao@fluke.com\r\n\
-            Fluke CPD Product Evaluation Team Copyright (c) 2016";
+    AboutString = "This is a AutoTest program for PAC project.\r\nRelease Version: ";
+    AboutString.append(APP_VERSION);
+    AboutString.append("\r\n\r\n");
+    AboutString.append("Designed by: Bob Cao\r\nEmail:yongbo.cao@fluke.com\r\n\r\n\
+            Fluke CPD Product Evaluation Team Copyright (c) 2016~2017");
+
     QMessageBox::about(this,"About",AboutString);
 
 }
@@ -205,6 +224,20 @@ void MainWindow::autoScroll()//textbrowser auto scroll
     QTextCursor cursor =  ui->textBrowser->textCursor();
     cursor.movePosition(QTextCursor::End);
     ui->textBrowser->setTextCursor(cursor);
+}
+
+void MainWindow::CreateFileName()   //Create file name for each test run. Will be located when COM is connected
+{
+    QDateTime Times_StartTest = QDateTime::currentDateTime();
+    QString Timestr_StartTest = Times_StartTest.toString("yyyy_MM_dd_hhmmss"); //设置显示格式
+
+    xlsxFileName = "PAC_";
+    xlsxFileName.append(ui->comboBox_SensorType->currentText());
+    xlsxFileName.append("_");
+    xlsxFileName.append(Timestr_StartTest);
+    xlsxFileName.append(".xlsx");
+
+    CurrentRow = StartRow_Pres;  //reset to start
 }
 
 void MainWindow::InitialCOM_Time()
@@ -268,6 +301,7 @@ void MainWindow::Write_COM_INI(QString KeyString, int COM_Index)
 
 void MainWindow::on_pushButton_Connect_clicked()
 {
+    bool ComOpen_PASS_Fail = true;
     ui->pushButton_DisConnect->setDisabled(false);
     ui->pushButton_Connect->setDisabled(true);
 
@@ -280,10 +314,12 @@ void MainWindow::on_pushButton_Connect_clicked()
     if(Port_F7252->isOpen())
     {
         TEMPSTR.append("-Port_F7252 Connect successfully.\r\n");
+        ComOpen_PASS_Fail = true;
     }
     else
     {
         TEMPSTR.append("-Port_F7252 Connect Failed.\r\n");
+        ComOpen_PASS_Fail = false;
     }
     ui->textBrowser->setText(TEMPSTR + "\r\n");
     qDebug() << TEMPSTR;
@@ -296,19 +332,33 @@ void MainWindow::on_pushButton_Connect_clicked()
     if(Port_ISO->isOpen())
     {
         TEMPSTR.append("-Port_FIX ISO Connect successfully.\r\n");
+        ComOpen_PASS_Fail = true;
     }
     else
     {
         TEMPSTR.append("-Port_FIX ISO Connect Failed.\r\n");
+        ComOpen_PASS_Fail = false;
     }
     ui->textBrowser->setText(TEMPSTR + "\r\n");
     qDebug() << TEMPSTR;
+    //CreateFileName();
+    if(ComOpen_PASS_Fail)
+    {
+        CreateFileName();
+    }
+    else
+    {
+        on_pushButton_DisConnect_clicked();
+    }
 }
 
 void MainWindow::Pressure_Test()//
 {
     on_pushButton_Connect_clicked();// Connect to UUT
-    on_pushButton_Iso_Setting_clicked();//SET FIx ISO
+    if(!(ui->checkBox_EnableDisableISO->isChecked()))
+    {
+        on_pushButton_Iso_Setting_clicked();//SET FIx ISO
+    }
     on_pushButton_Start_clicked();// Connect to UUT and start to test
 
 }
@@ -474,7 +524,7 @@ void MainWindow::WriteTitle2Excel()
     COM_List.append(ui->comboBox_UUT8->currentText());
 
     qDebug() << COM_List;
-    QXlsx::Document xlsxFile("PAC.xlsx");
+    QXlsx::Document xlsxFile(xlsxFileName);
 
     int DataNUM = COM_List.size();
 
@@ -490,7 +540,7 @@ void MainWindow::WriteTitle2Excel()
 void MainWindow::WriteReadings2Excel(QStringList Readings)  //Write Readings
 {
     QStringList DataList = Readings;
-    QXlsx::Document xlsxFile("PAC.xlsx");
+    QXlsx::Document xlsxFile(xlsxFileName);
 
     int DataNUM = DataList.size();
 
@@ -647,8 +697,10 @@ void MainWindow::slot_Get_Reading_CMD(QextSerialPort *Port_UUT) //
         SendCMD(CMD_UUT_Read_Pres_Measurement,Port_UUT);
 }
 
-void MainWindow::slot_Send_PollingReading_CMD() // send cmd to UUT
+void MainWindow::slot_Send_PollingReading_CMD() // send cmd to UUT, timeout for 900ms
 {
+    qApp->processEvents();// Process UI response, improve the reading refresh rate.
+
     if(ui->checkBox_Reading1->isChecked())
     {
         SendCMD(CMD_UUT_Read_Pres_Measurement,Port_UUT1);
@@ -694,6 +746,7 @@ void MainWindow::slot_Send_PollingReading_CMD() // send cmd to UUT
     {
        SendCMD(CMD_7252i_GetValue_ChannelA,Port_F7252);
     }
+
 
 }
 
@@ -904,6 +957,9 @@ bool MainWindow::Check_UUTCOM(QComboBox *CurrentComboBox,QextSerialPort *UUT_POR
 void MainWindow::Prepare_UUT(QextSerialPort *UUT_PORT)//
 {
     // Prepare for Pressure Measurement MODE of UUT, get ready for reading
+    SendCMD(CMD_UUT_EnterRoot,UUT_PORT);
+    sleep(2000);
+
     SendCMD(CMD_UUT_EnterShell,UUT_PORT);
     sleep(2000);
 
@@ -1068,7 +1124,8 @@ void MainWindow::on_pushButton_Start_clicked()
     CurrentTestPoint = 0;
     PRES_PointList.clear();
 
-    //WriteTitle2Excel();//title, not needed , it is deleted when for more timer test.
+    WriteTitle2Excel(); // title, not needed , it is deleted when for more timer test., due to the data recorded by row continiously , 
+                        // 201703： seperated by individule xlsx file for each timer, so , it can be added.
 
     // Reading test point from file
     ReadTestPoint();
@@ -1215,6 +1272,18 @@ void MainWindow::on_pushButton_Pause_clicked()
 void MainWindow::on_pushButton_Voltage_clicked()
 {
     //For Test
+
+    QXlsx::Document xlsx(xlsxFileName);
+
+    for(int i = 0;i < 5; i++)
+    {
+        xlsx.write(CurrentRow -1,StartCol,"pac");
+        CurrentRow ++;
+    }
+
+    xlsx.save();
+    return;
+
     // blue: rgb(xxx,xxx,xxx)
     //yellow  setStyleSheet("color: blue; background-color: yellow");
     //red
@@ -1224,7 +1293,7 @@ void MainWindow::on_pushButton_Voltage_clicked()
     ui->label_Reading5->setStyleSheet("color: blue; background-color: gray");
     ui->label_Reading6->setStyleSheet("color: rgb(255,235,17); background-color: gray");
     ui->label_Reading7->setStyleSheet("color: red; background-color: gray");
-    return;
+
 
 
     if(!ConnectTOUUT())
@@ -1517,3 +1586,35 @@ QString MainWindow::GetISOSetting()
 
 }
 
+
+void MainWindow::on_checkBox_EnableDisableISO_clicked()
+{
+    if(!(ui->checkBox_EnableDisableISO->isChecked()))
+    {
+        ui->pushButton_Iso_Setting->setEnabled(true);
+        ui->checkBox_MasterSwitch->setEnabled(true);
+        ui->checkBox_SubSwitch_1->setEnabled(true);
+        ui->checkBox_SubSwitch_2->setEnabled(true);
+        ui->checkBox_SubSwitch_3->setEnabled(true);
+        ui->checkBox_SubSwitch_4->setEnabled(true);
+        ui->checkBox_SubSwitch_5->setEnabled(true);
+        ui->checkBox_SubSwitch_6->setEnabled(true);
+        ui->checkBox_SubSwitch_7->setEnabled(true);
+        ui->checkBox_SubSwitch_8->setEnabled(true);
+
+    }
+    else
+    {
+        ui->checkBox_MasterSwitch->setEnabled(false);
+        ui->checkBox_SubSwitch_1->setEnabled(false);
+        ui->checkBox_SubSwitch_2->setEnabled(false);
+        ui->checkBox_SubSwitch_3->setEnabled(false);
+        ui->checkBox_SubSwitch_4->setEnabled(false);
+        ui->checkBox_SubSwitch_5->setEnabled(false);
+        ui->checkBox_SubSwitch_6->setEnabled(false);
+        ui->checkBox_SubSwitch_7->setEnabled(false);
+        ui->checkBox_SubSwitch_8->setEnabled(false);
+        ui->pushButton_Iso_Setting->setEnabled(false);
+
+    }
+}

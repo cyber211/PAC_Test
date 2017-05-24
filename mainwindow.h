@@ -49,6 +49,8 @@ public:
     QString Time_Setting_str5;
     QString Time_Setting_str6;
 
+    QString xlsxFileName;
+
 
     QTimer *timer;  // For controlling the 7252 output the source pressure at a regular time through cmd.
     QTimer *timer_GetReading; // For get reading qua-realtime(through cmd) form each UUT, 300ms
@@ -91,6 +93,8 @@ private slots:
     void ReadTestPoint();
     void Clear_READINGS();
     void InitialCOM_Time();
+
+    void CreateFileName();
 
     void readUUT1_port();
     void readUUT2_port();
@@ -164,6 +168,8 @@ private slots:
     void on_pushButton_Iso_Setting_clicked();
 
     void on_comboBox_FIX_ISO_currentIndexChanged(int index);
+
+    void on_checkBox_EnableDisableISO_clicked();
 
 private:
     Ui::MainWindow *ui;

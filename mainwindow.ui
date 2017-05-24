@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>PAC AutoTest for Measure - tffdata -Ver 0.25 -20170223</string>
+   <string>PAC AutoTest for Measure - tffdata -Ver 0.26 -20170223</string>
   </property>
   <property name="windowIcon">
    <iconset resource="res.qrc">
@@ -280,7 +280,7 @@
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_COM_E_2" stretch="0,0,0">
+       <layout class="QHBoxLayout" name="horizontalLayout_ISO_Switch" stretch="1,4,1,1">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_7253" stretch="0">
           <item>
@@ -288,13 +288,13 @@
             <property name="font">
              <font>
               <family>Arial</family>
-              <pointsize>14</pointsize>
+              <pointsize>20</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>
             </property>
             <property name="text">
-             <string>Master Switch</string>
+             <string>Master SW</string>
             </property>
            </widget>
           </item>
@@ -313,7 +313,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Sub  Switch 1</string>
+             <string>Sub  S1</string>
             </property>
            </widget>
           </item>
@@ -328,7 +328,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Sub Switch 2</string>
+             <string>Sub S2</string>
             </property>
            </widget>
           </item>
@@ -343,7 +343,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Sub Switch 3</string>
+             <string>Sub S3</string>
             </property>
            </widget>
           </item>
@@ -358,7 +358,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Sub Switch 4</string>
+             <string>Sub S4</string>
             </property>
            </widget>
           </item>
@@ -373,7 +373,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Sub Switch 5</string>
+             <string>Sub S5</string>
             </property>
            </widget>
           </item>
@@ -388,7 +388,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Sub Switch 6</string>
+             <string>Sub S6</string>
             </property>
            </widget>
           </item>
@@ -403,7 +403,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Sub Switch 7</string>
+             <string>Sub S7</string>
             </property>
            </widget>
           </item>
@@ -418,11 +418,32 @@
              </font>
             </property>
             <property name="text">
-             <string>Sub Switch 8</string>
+             <string>Sub S8</string>
             </property>
            </widget>
           </item>
          </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_EnableDisableISO">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <pointsize>22</pointsize>
+            <weight>75</weight>
+            <italic>false</italic>
+            <bold>true</bold>
+            <underline>true</underline>
+            <strikeout>false</strikeout>
+           </font>
+          </property>
+          <property name="text">
+           <string>Disable ISO</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_Iso_Setting">

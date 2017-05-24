@@ -1,0 +1,46 @@
+[mAMeasure]
+mA1 = 0.1
+mA2 = 12
+mA3 = 24
+
+[PressureMeasure]
+Point01 = -82.74
+Point02 = -34.47
+Point03 = 0
+Point04 = 34.47
+Point05 = 172.37
+Point06 = 344.47
+Point07 = 517.11
+Point08 = 689.48
+Point09 = 861.84
+Point10 = 1034.21
+Point11 = 1034.21
+Point12 = 861.84
+Point13 = 689.48
+Point14 = 517.11
+Point15 = 344.74
+Point16 = 172.37
+Point17 = 34.47
+Point18 = 0
+Point19 = -34.47
+Point20 = -82.74
+Point21 = -82.74
+Point22 = -34.47
+Point23 = 0
+Point24 = 34.47
+Point25 = 172.37
+Point26 = 344.47
+Point27 = 517.11
+Point28 = 689.48
+Point29 = 861.84
+Point30 = 1034.21
+Point31 = 1034.21
+Point32 = 861.84
+Point33 = 689.48
+Point34 = 517.11
+Point35 = 344.74
+Point36 = 172.37
+Point37 = 34.47
+Point38 = 0
+Point39 = -34.47
+Point40 = -82.74

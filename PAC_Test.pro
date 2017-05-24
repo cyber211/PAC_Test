@@ -29,8 +29,11 @@ RESOURCES += \
     res.qrc
 
 
-VERSION = 0.0.25
+VERSION = 0.0.26
+#BUILD_NUMBER =
+#APP_VERSION_DATE：
+#APP_VERSION：
 QMAKE_TARGET_PRODUCT = PAC TESTER
 QMAKE_TARGET_COMPANY = Fortive/Fluke
-QMAKE_TARGET_DESCRIPTION = Bob Cao
-QMAKE_TARGET_COPYRIGHT = Fluke, All copyright reserved.
+QMAKE_TARGET_DESCRIPTION = This is a AutoTest program For PAC project, It is a automated pressure calibrator. - Bob Cao
+QMAKE_TARGET_COPYRIGHT = Fluke Product Evaluation Team, All copyright reserved.
