@@ -831,9 +831,7 @@ void MainWindow::Slot_Parse_Reading(QString ReceiveData,PortType UUT)//2,REGEX
     str.append(" RX:  ");
     str.append(ReceiveData);
 
-
     //RX GET READINGS
-
     int pos = ReceiveData.indexOf(rx);          // 0, position of the first match.
                                                 // Returns -1 if str is not found.
                                                 // You can also use rx.indexIn(str);
@@ -844,12 +842,55 @@ void MainWindow::Slot_Parse_Reading(QString ReceiveData,PortType UUT)//2,REGEX
         qDebug() << Reading;
         UpdateUI_Reading(Reading,UUT);
     }
-    //UpdateUI_Reading(Reading,UUT);
 
 }
 
 void MainWindow::ReadUUT(QextSerialPort *UUTPort,PortType UUT )//1. parse, 2,REGEX
 {
+    QString ReceiveByte;
+    if(UUTPort->bytesAvailable())
+    {
+        ReceiveByte = UUTPort->readAll();
+        switch(UUT)
+        {
+            case Port_UUT_1:
+            case Port_UUT_2:
+            case Port_UUT_3:
+            case Port_UUT_4:
+            case Port_UUT_5:
+            case Port_UUT_6:
+            case Port_UUT_7:
+            case Port_UUT_8:
+            {
+                ReceiveData_UUT += ReceiveByte;
+                if ( ReceiveData_UUT.contains("#>") )
+                {
+                    emit sig_Parse_Reading(ReceiveData_UUT,UUT);//UUT readings
+                    ReceiveData_UUT.clear();
+                }
+            }
+            break;
+            case Port_Equipment_7252I:
+            {
+                ReceiveData_7252 += ReceiveByte;
+                if ( ReceiveData_7252.contains("\r\n"))
+                {
+                    ReceiveData_7252 += ReceiveByte;
+                    emit sig_Parse_Reading(ReceiveData_7252,UUT);
+                    qDebug() << ReceiveData_7252;
+                    ReceiveData_7252.clear();
+                }
+            }
+            break;
+            default:break;
+        }
+    }
+
+
+
+
+
+    /**********************************************************************************
     QString ReceiveByte;
     QString ReceiveData;   
 
@@ -857,7 +898,9 @@ void MainWindow::ReadUUT(QextSerialPort *UUTPort,PortType UUT )//1. parse, 2,REG
     {
         ReceiveByte = UUTPort->readAll();
         ReceiveData += ReceiveByte;
-        if(CurrentCMD == CMD_UUT_Read_Pres_Measurement)
+
+
+        if(CurrentCMD == CMD_UUT_Read_Pres_Measurement)// 可以用PortType 来代替判断，见wolf test的project code
         {
             if(ReceiveData.contains("#>"))
             {
@@ -871,15 +914,15 @@ void MainWindow::ReadUUT(QextSerialPort *UUTPort,PortType UUT )//1. parse, 2,REG
             //QRegExp rx(QString("([- +]*\\d+\\.\\d+E[-+]\\d+\\r)"));//'^([-+ ]?\d+\.\d+E[-+]?\d+)\r\n'
             //int pos = ReceiveData.indexOf(rx);
             //if ( pos >= 0 )
-            if ( ReceiveData.contains("\r\n") )
+            if ( ReceiveData.contains("\r\n"))
             {
                 emit sig_Parse_Reading(ReceiveData,UUT);
                 qDebug() << ReceiveData;
                 ReceiveData.clear();
             }
-
         }
     }
+    *************************************************************************************************************/
 }
 
 
@@ -929,6 +972,8 @@ void MainWindow::readUUT8_port()// slot for readrRead
 void MainWindow::readF7252_port() //slot for read 7252
 {
     ReadUUT(Port_F7252,Port_Equipment_7252I);
+
+
 }
 
 bool MainWindow::Check_UUTCOM(QComboBox *CurrentComboBox,QextSerialPort *UUT_PORT) //Connect and  Prepare for Pressure Measurement MODE of UUT, get ready for reading

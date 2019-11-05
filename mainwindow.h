@@ -50,6 +50,8 @@ public:
     QString Time_Setting_str6;
 
     QString xlsxFileName;
+    QString ReceiveData_UUT;
+    QString ReceiveData_7252;
 
 
     QTimer *timer;  // For controlling the 7252 output the source pressure at a regular time through cmd.

@@ -8,14 +8,14 @@ typedef enum
     Port_Equipment_5520A = 0,
     Port_Equipment_6270 = 1,
     Port_Equipment_7252I = 2,
-    Port_UUT_1 = 3,
-    Port_UUT_2 = 4,
-    Port_UUT_3 = 5,
-    Port_UUT_4 = 6,
-    Port_UUT_5 = 7,
-    Port_UUT_6 = 8,
-    Port_UUT_7 = 9,
-    Port_UUT_8 = 10
+    Port_UUT_1 = 5,
+    Port_UUT_2 = 6,
+    Port_UUT_3 = 7,
+    Port_UUT_4 = 8,
+    Port_UUT_5 = 9,
+    Port_UUT_6 = 10,
+    Port_UUT_7 = 11,
+    Port_UUT_8 = 12
 } PortType;
 
 typedef enum
